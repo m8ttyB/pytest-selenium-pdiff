@@ -29,10 +29,8 @@ setup(
     author_email='phil@rentlytics.com',
     url='https://github.com/rentlytics/pytest-selenium-pdiff',
     packages=[
-        'pytest-selenium-pdiff',
+        'pytest_selenium_pdiff',
     ],
-    package_dir={'pytest-selenium-pdiff':
-                     'pytest-selenium-pdiff'},
     include_package_data=True,
     install_requires=requirements,
     license="MIT",
