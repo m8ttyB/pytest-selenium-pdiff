@@ -35,7 +35,7 @@ setup(
     install_requires=requirements,
     license="MIT",
     zip_safe=False,
-    keywords='pytest-selenium-pdiff',
+    keywords='pytest selenium pdiff perceptualdiff',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
