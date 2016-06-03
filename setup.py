@@ -31,6 +31,11 @@ setup(
     packages=[
         'pytest_selenium_pdiff',
     ],
+    entry_points={
+        'pytest11': [
+            'selenium_pdiff = pytest_selenium_pdiff.pytest_selenium_pdiff',
+        ]
+    },
     include_package_data=True,
     install_requires=requirements,
     license="MIT",
