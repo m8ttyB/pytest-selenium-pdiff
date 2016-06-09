@@ -17,6 +17,7 @@ def assert_screenshot_matches(driver, screenshot_name):
 
     stored_screenshot = os.path.join(storage_path, screenshot_name + '.png')
     diff_output_path = os.path.join(artifacts_path, screenshot_name + '.diff.png')
+    diff_capture_path = os.path.join(artifacts_path, screenshot_name + '.captured.png')
 
     have_stored_screenshot = os.path.exists(stored_screenshot)
 
@@ -35,6 +36,7 @@ def assert_screenshot_matches(driver, screenshot_name):
             )
 
             if result.exit_code == 1:
+                shutil.move(captured_screenshot, diff_capture_path)
                 raise ScreenshotMismatch(screenshot_name, stored_screenshot, diff_output_path, str(result).strip())
         elif settings['ALLOW_SCREENSHOT_CAPTURE']:
             shutil.move(captured_screenshot, stored_screenshot)
