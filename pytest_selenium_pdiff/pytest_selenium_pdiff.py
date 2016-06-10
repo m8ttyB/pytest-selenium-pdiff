@@ -1,3 +1,5 @@
+import os
+
 settings = {
     'SCREENSHOTS_PATH': None,
     'PDIFF_PATH': None,
@@ -22,3 +24,6 @@ def pytest_configure(config):
     settings['SCREENSHOTS_PATH'] = config.getoption('screenshots_path')
     settings['PDIFF_PATH'] = config.getoption('pdiff_path')
     settings['ALLOW_SCREENSHOT_CAPTURE'] = config.getoption('allow_screenshot_capture')
+
+    if 'ALLOW_SCREENSHOT_CAPTURE' in os.environ:
+        settings['ALLOW_SCREENSHOT_CAPTURE'] = True
