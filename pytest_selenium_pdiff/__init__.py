@@ -2,7 +2,7 @@
 
 __author__ = 'Phil Plante'
 __email__ = 'phil@rentlytics.com'
-__version__ = '0.2.2'
+__version__ = '0.2.3'
 
 # noinspection PyUnresolvedReferences
 from .pytest_selenium_pdiff import *
