@@ -3,11 +3,9 @@
 import os
 
 import pytest
-import time
-
 from selenium.webdriver.remote.webdriver import WebDriver
 
-from pytest_selenium_pdiff import utils, settings, assertions, exceptions
+from pytest_selenium_pdiff import utils, settings, exceptions, screenshot_matches
 
 
 def test_ensure_path_exists(tmpdir):
@@ -20,7 +18,7 @@ def test_ensure_path_exists(tmpdir):
     assert os.path.exists(path) is True
 
 
-def test_assert_screenshot_matches(selenium: WebDriver, tmpdir):
+def test_screenshot_matches(selenium: WebDriver, tmpdir):
     selenium.implicitly_wait(5)
     selenium.set_window_size(1200, 800)
     selenium.maximize_window()
@@ -31,17 +29,20 @@ def test_assert_screenshot_matches(selenium: WebDriver, tmpdir):
     settings['PDIFF_PATH'] = str(tmpdir.join('pdiff/'))
 
     with pytest.raises(exceptions.MissingScreenshot):
-        assertions.assert_screenshot_matches(selenium, 'testing')
+        assert screenshot_matches(selenium, 'testing')
 
     settings['ALLOW_SCREENSHOT_CAPTURE'] = True
 
-    assertions.assert_screenshot_matches(selenium, 'testing')
+    assert screenshot_matches(selenium, 'testing')
     assert os.path.exists(os.path.join(settings['SCREENSHOTS_PATH'], 'testing.png')) is True
+
+    assert screenshot_matches(selenium, 'subdir/testing')
+    assert os.path.exists(os.path.join(settings['SCREENSHOTS_PATH'], 'subdir/testing.png')) is True
 
     with pytest.raises(exceptions.ScreenshotMismatch):
         selenium.get('./tests/fixtures/page1-changed.html')
         selenium.find_element_by_tag_name('body').text.index("It has a second paragraph.")
-        assertions.assert_screenshot_matches(selenium, 'testing')
+        assert screenshot_matches(selenium, 'testing')
 
     captured_path = os.path.join(settings['PDIFF_PATH'], 'testing.captured.png')
     pdiff_path = os.path.join(settings['PDIFF_PATH'], 'testing.diff.png')
