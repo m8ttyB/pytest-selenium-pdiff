@@ -60,3 +60,4 @@ target/
 
 # Intellij
 .idea
+venv/

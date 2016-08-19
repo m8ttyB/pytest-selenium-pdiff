@@ -3,9 +3,8 @@
 import os
 
 import pytest
-from selenium.webdriver.remote.webdriver import WebDriver
 
-from pytest_selenium_pdiff import utils, settings, exceptions, screenshot_matches
+from pytest_selenium_pdiff import exceptions, screenshot_matches, settings, utils
 
 
 def test_ensure_path_exists(tmpdir):
@@ -18,10 +17,9 @@ def test_ensure_path_exists(tmpdir):
     assert os.path.exists(path) is True
 
 
-def test_screenshot_matches(selenium: WebDriver, tmpdir):
+def test_screenshot_matches(selenium, tmpdir):
     selenium.implicitly_wait(5)
     selenium.set_window_size(1200, 800)
-    selenium.maximize_window()
 
     selenium.get('./tests/fixtures/page1.html')
 
@@ -39,13 +37,27 @@ def test_screenshot_matches(selenium: WebDriver, tmpdir):
     assert screenshot_matches(selenium, 'subdir/testing')
     assert os.path.exists(os.path.join(settings['SCREENSHOTS_PATH'], 'subdir/testing.png')) is True
 
-    with pytest.raises(exceptions.ScreenshotMismatch):
+    with pytest.raises(exceptions.ScreenshotMismatchWithDiff):
         selenium.get('./tests/fixtures/page1-changed.html')
         selenium.find_element_by_tag_name('body').text.index("It has a second paragraph.")
         assert screenshot_matches(selenium, 'testing')
 
-    captured_path = os.path.join(settings['PDIFF_PATH'], 'testing.captured.png')
-    pdiff_path = os.path.join(settings['PDIFF_PATH'], 'testing.diff.png')
+        captured_path = os.path.join(settings['PDIFF_PATH'], 'testing.captured.png')
+        pdiff_path = os.path.join(settings['PDIFF_PATH'], 'testing.diff.png')
 
-    assert os.path.exists(captured_path)
-    assert os.path.exists(pdiff_path)
+        assert os.path.exists(captured_path)
+        assert os.path.exists(pdiff_path)
+
+    with pytest.raises(exceptions.ScreenshotMismatch):
+        screenshot_matches(selenium, 'testing-size')
+
+        selenium.set_window_size(1200, 900)
+        selenium.get('./tests/fixtures/page1-changed.html')
+        selenium.find_element_by_tag_name('body').text.index("It has a second paragraph.")
+        assert screenshot_matches(selenium, 'testing-size')
+
+        captured_path = os.path.join(settings['PDIFF_PATH'], 'testing-size.captured.png')
+        pdiff_path = os.path.join(settings['PDIFF_PATH'], 'testing-size.diff.png')
+
+        assert os.path.exists(captured_path)
+        assert os.path.exists(pdiff_path) is False
