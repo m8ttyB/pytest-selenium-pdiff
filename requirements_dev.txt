@@ -7,5 +7,9 @@ coverage==4.0
 Sphinx==1.3.1
 cryptography==1.3.2
 PyYAML==3.11
-pytest==2.8.3
-pytest-cov==2.2.1
+pytest==3.0.1
+pytest-base-url==1.1.0
+pytest-cov==2.3.1
+pytest-html==1.10.0
+pytest-selenium==1.3.1
+pytest-variables==1.4

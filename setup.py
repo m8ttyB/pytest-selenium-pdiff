@@ -11,8 +11,8 @@ with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
 requirements = [
-    'pytest==2.9.2',
-    'pytest-selenium==1.2.1',
+    'pytest>=2.9.2',
+    'pytest-selenium>=1.2.1',
     # used to call perceptualdiff util
     'sh==1.11'
 ]
