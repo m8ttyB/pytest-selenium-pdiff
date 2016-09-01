@@ -42,11 +42,13 @@ def test_screenshot_matches(selenium, tmpdir):
         selenium.find_element_by_tag_name('body').text.index("It has a second paragraph.")
         assert screenshot_matches(selenium, 'testing')
 
-        captured_path = os.path.join(settings['PDIFF_PATH'], 'testing.captured.png')
-        pdiff_path = os.path.join(settings['PDIFF_PATH'], 'testing.diff.png')
+    captured_path = os.path.join(settings['PDIFF_PATH'], 'testing.captured.png')
+    pdiff_path = os.path.join(settings['PDIFF_PATH'], 'testing.diff.png')
 
-        assert os.path.exists(captured_path)
-        assert os.path.exists(pdiff_path)
+    assert os.path.exists(captured_path)
+    assert os.path.exists(pdiff_path)
+
+    assert screenshot_matches(selenium, 'testing', pixel_threshold=49500)
 
     with pytest.raises(exceptions.ScreenshotMismatch):
         screenshot_matches(selenium, 'testing-size')
@@ -56,8 +58,8 @@ def test_screenshot_matches(selenium, tmpdir):
         selenium.find_element_by_tag_name('body').text.index("It has a second paragraph.")
         assert screenshot_matches(selenium, 'testing-size')
 
-        captured_path = os.path.join(settings['PDIFF_PATH'], 'testing-size.captured.png')
-        pdiff_path = os.path.join(settings['PDIFF_PATH'], 'testing-size.diff.png')
+    captured_path = os.path.join(settings['PDIFF_PATH'], 'testing-size.captured.png')
+    pdiff_path = os.path.join(settings['PDIFF_PATH'], 'testing-size.diff.png')
 
-        assert os.path.exists(captured_path)
-        assert os.path.exists(pdiff_path) is False
+    assert os.path.exists(captured_path)
+    assert os.path.exists(pdiff_path) is False

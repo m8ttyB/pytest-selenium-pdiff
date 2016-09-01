@@ -8,7 +8,7 @@ from .pytest_selenium_pdiff import settings
 from .utils import ensure_path_exists
 
 
-def screenshot_matches(driver, screenshot_name):
+def screenshot_matches(driver, screenshot_name, pixel_threshold=0):
     storage_path = settings['SCREENSHOTS_PATH']
     artifacts_path = settings['PDIFF_PATH']
 
@@ -29,6 +29,7 @@ def screenshot_matches(driver, screenshot_name):
     if have_stored_screenshot:
         result = perceptualdiff(
             '-output', diff_output_path,
+            '-threshold', pixel_threshold,
             stored_screenshot,
             captured_screenshot,
             _ok_code=[0, 1]
