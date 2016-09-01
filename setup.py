@@ -22,7 +22,7 @@ test_requirements = [
 
 setup(
     name='pytest-selenium-pdiff',
-    version='0.2.6',
+    version='0.2.7',
     description="A pytest package implementing perceptualdiff for Selenium tests.",
     long_description=readme + '\n\n' + history,
     author="Phil Plante",
