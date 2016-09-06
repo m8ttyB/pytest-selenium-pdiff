@@ -14,5 +14,6 @@ A pytest package implementing perceptualdiff for Selenium tests.
 
 ## Running tests
 1. Ensure `tox` is installed with `pip install tox`
+1. Install PhantomJS with `brew install phantomjs`
 1. Use `tox` to run tests against py2.7 and py3.5.
-1. Rentlytics employees can run `make release` to push to PyPi
+1. Rentlytics employees can run `make release` to push to PyPi.  In order to authenticate, you need a `.pypirc` file in your home directory
