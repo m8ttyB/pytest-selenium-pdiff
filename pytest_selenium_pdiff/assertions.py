@@ -8,7 +8,7 @@ from .pytest_selenium_pdiff import settings
 from .utils import ensure_path_exists
 
 
-def screenshot_matches(driver, screenshot_name, pixel_threshold=0):
+def screenshot_matches(driver, screenshot_name, pixel_threshold=1):
     storage_path = settings['SCREENSHOTS_PATH']
     artifacts_path = settings['PDIFF_PATH']
 
