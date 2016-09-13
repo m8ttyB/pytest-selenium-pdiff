@@ -63,3 +63,40 @@ def test_screenshot_matches(selenium, tmpdir):
 
     assert os.path.exists(captured_path)
     assert os.path.exists(pdiff_path) is False
+
+
+def xtest_screenshot_breaks(selenium, tmpdir):
+    selenium.implicitly_wait(5)
+    selenium.set_window_size(1200, 800)
+
+    selenium.get('./tests/fixtures/page1.html')
+
+    settings['SCREENSHOTS_PATH'] = str(tmpdir.join('screenshots/'))
+    settings['PDIFF_PATH'] = str(tmpdir.join('pdiff/'))
+
+    settings['ALLOW_SCREENSHOT_CAPTURE'] = True
+
+    assert screenshot_matches(selenium, 'testing')
+
+    selenium.get('./tests/fixtures/page1-changed.html')
+    selenium.find_element_by_tag_name('body').text.index("It has a second paragraph.")
+    assert screenshot_matches(selenium, 'testing')
+
+
+def xtest_screenshot_breaks_on_size(selenium, tmpdir):
+    selenium.implicitly_wait(5)
+    selenium.set_window_size(1200, 800)
+
+    selenium.get('./tests/fixtures/page1.html')
+
+    settings['SCREENSHOTS_PATH'] = str(tmpdir.join('screenshots/'))
+    settings['PDIFF_PATH'] = str(tmpdir.join('pdiff/'))
+
+    settings['ALLOW_SCREENSHOT_CAPTURE'] = True
+
+    screenshot_matches(selenium, 'testing-size')
+
+    selenium.set_window_size(1200, 900)
+    selenium.get('./tests/fixtures/page1-changed.html')
+    selenium.find_element_by_tag_name('body').text.index("It has a second paragraph.")
+    assert screenshot_matches(selenium, 'testing-size')
