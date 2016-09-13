@@ -8,7 +8,9 @@ from . import exceptions
 settings = {
     'SCREENSHOTS_PATH': None,
     'PDIFF_PATH': None,
-    'ALLOW_SCREENSHOT_CAPTURE': False
+    'ALLOW_SCREENSHOT_CAPTURE': False,
+    'USE_IMAGEMAGICK': False,
+    'USE_PERCEPTUALDIFF': False,
 }
 
 SCREENSHOT_EXCEPTION_TYPES = (
@@ -29,11 +31,19 @@ def pytest_addoption(parser):
                      metavar='path',
                      help='path to pdiff output')
 
-    selenium_exclude_debug = os.environ.get('SELENIUM_EXCLUDE_DEBUG', '')
-    if 'screenshot' not in selenium_exclude_debug:
-        selenium_exclude_debug += ' screenshot'
 
-    os.environ['SELENIUM_EXCLUDE_DEBUG'] = selenium_exclude_debug
+def pytest_report_header(config):
+    if settings['USE_IMAGEMAGICK']:
+        return "pytest-selenium-pdiff: using ImageMagick compare util"
+
+    if settings['USE_PERCEPTUALDIFF']:
+        return "pytest-selenium-pdiff: using perceptualdiff util"
+
+    raise Exception(
+        "pytest-selenium-pdiff: required binary "
+        "`perceptualdiff` or `compare` "
+        "(from ImageMagick) not found."
+    )
 
 
 def pytest_configure(config):
@@ -44,40 +54,73 @@ def pytest_configure(config):
     if 'ALLOW_SCREENSHOT_CAPTURE' in os.environ:
         settings['ALLOW_SCREENSHOT_CAPTURE'] = True
 
+    try:
+        from sh import compare
+        settings['USE_IMAGEMAGICK'] = True
+    except ImportError:
+        pass
+
+    try:
+        from sh import perceptualdiff
+        settings['USE_PERCEPTUALDIFF'] = True
+    except ImportError:
+        pass
+
 
 @pytest.mark.hookwrapper
 def pytest_runtest_makereport(item, call):
-    pytest_html = item.config.pluginmanager.getplugin('html')
     outcome = yield
     report = outcome.get_result()
     report.extra = getattr(report, 'extra', [])
 
-    xfail = hasattr(report, 'wasxfail')
-    failure = (report.skipped and xfail) or (report.failed and not xfail)
-
-    if failure and call.excinfo:
+    if is_failure(report) and call.excinfo:
         exception = call.excinfo.value
 
         if isinstance(exception, SCREENSHOT_EXCEPTION_TYPES):
-            report.extra.append(pytest_html.extras.image(
-                get_image_as_base64(exception.expected_screenshot),
-                'PDIFF: Expected'
-            ))
+            pytest_html = item.config.pluginmanager.getplugin('html')
 
-            if isinstance(exception, exceptions.ScreenshotMismatchWithDiff):
+            if pytest_html is not None:
                 report.extra.append(pytest_html.extras.image(
-                    get_image_as_base64(exception.pdiff_comparison),
-                    'PDIFF: Comparison'
+                    get_image_as_base64(exception.expected_screenshot),
+                    'PDIFF: Expected'
                 ))
 
+                if isinstance(exception, exceptions.ScreenshotMismatchWithDiff):
+                    report.extra.append(pytest_html.extras.image(
+                        get_image_as_base64(exception.screenshot_comparison),
+                        'PDIFF: Comparison'
+                    ))
+
+                report.extra.append(pytest_html.extras.image(
+                    get_image_as_base64(exception.captured_screenshot),
+                    'PDIFF: Actual'
+                ))
+        else:
+            driver = getattr(item, '_driver', None)
+            if driver is not None:
+                inject_screenshot_for_pytest_selenium(driver, item, report)
+
+
+def inject_screenshot_for_pytest_selenium(driver, item, report):
+    try:
+        pytest_html = item.config.pluginmanager.getplugin('html')
+
+        if pytest_html is not None:
             report.extra.append(pytest_html.extras.image(
-                get_image_as_base64(exception.captured_screenshot),
-                'PDIFF: Actual'
+                driver.get_screenshot_as_base64(),
+                'Screenshot'
             ))
+    except Exception as e:
+        pass
+
+
+def is_failure(report):
+    xfail = hasattr(report, 'wasxfail')
+
+    return (report.skipped and xfail) or (report.failed and not xfail)
 
 
 def get_image_as_base64(filename):
     with open(filename, 'rb') as fp:
         content = fp.read()
-        b64_image = base64.b64encode(content).decode('ascii')
-    return b64_image
+        return base64.b64encode(content).decode('ascii')

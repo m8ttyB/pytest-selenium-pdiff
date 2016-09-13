@@ -12,12 +12,13 @@ with open('HISTORY.md') as history_file:
 
 requirements = [
     'pytest>=2.9.2',
-    'pytest-selenium>=1.2.1',
+    'pytest-selenium>=1.3.1',
     # used to call perceptualdiff util
     'sh==1.11'
 ]
 
 test_requirements = [
+    'pytest-cov>=2.3.1'
 ]
 
 setup(

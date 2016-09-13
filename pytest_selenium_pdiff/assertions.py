@@ -1,14 +1,14 @@
 import os
 import shutil
 
-from sh import perceptualdiff
-
 from . import exceptions
-from .pytest_selenium_pdiff import settings
+from pytest_selenium_pdiff import settings
 from .utils import ensure_path_exists
 
 
-def screenshot_matches(driver, screenshot_name, pixel_threshold=1):
+def screenshot_matches(driver, screenshot_name):
+    __tracebackhide__ = True  # noqa
+
     storage_path = settings['SCREENSHOTS_PATH']
     artifacts_path = settings['PDIFF_PATH']
 
@@ -27,15 +27,12 @@ def screenshot_matches(driver, screenshot_name, pixel_threshold=1):
     driver.get_screenshot_as_file(captured_screenshot)
 
     if have_stored_screenshot:
-        result = perceptualdiff(
-            '-output', pdiff_comparison,
-            '-threshold', pixel_threshold,
-            expected_screenshot,
-            captured_screenshot,
-            _ok_code=[0, 1]
-        )
+        if settings['USE_IMAGEMAGICK']:
+            result = use_imagemagick_compare(captured_screenshot, expected_screenshot, pdiff_comparison)
+        elif settings['USE_PERCEPTUALDIFF']:
+            result = use_perceptualdiff(captured_screenshot, expected_screenshot, pdiff_comparison)
 
-        if result.exit_code == 1:
+        if result.exit_code != 0:
             error_message = str(result).strip()
 
             if os.path.exists(pdiff_comparison):
@@ -53,3 +50,29 @@ def screenshot_matches(driver, screenshot_name, pixel_threshold=1):
         shutil.move(captured_screenshot, expected_screenshot)
 
     return True
+
+
+def use_imagemagick_compare(captured_screenshot, expected_screenshot, pdiff_comparison):
+    from sh import compare
+
+    return compare(
+        expected_screenshot,
+        captured_screenshot,
+        '-highlight-color',
+        'blue',
+        '-compose',
+        'src-over',
+        pdiff_comparison,
+        _ok_code=[0, 1, 2]
+    )
+
+
+def use_perceptualdiff(captured_screenshot, expected_screenshot, pdiff_comparison):
+    from sh import perceptualdiff
+
+    return perceptualdiff(
+        '-output', pdiff_comparison,
+        expected_screenshot,
+        captured_screenshot,
+        _ok_code=[0, 1]
+    )
