@@ -49,6 +49,8 @@ def test_screenshot_matches__switches_between_backends(selenium, tmpdir):
     with mock.patch('sh.compare') as mock_compare:
         result = mock.MagicMock()
         result.exit_code = 0
+        result.stderr = b'0'
+
         mock_compare.return_value = result
         screenshot_matches(selenium, 'testing')
 

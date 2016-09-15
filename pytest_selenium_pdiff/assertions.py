@@ -28,24 +28,16 @@ def screenshot_matches(driver, screenshot_name):
 
     if have_stored_screenshot:
         if settings['USE_IMAGEMAGICK']:
-            result = use_imagemagick_compare(captured_screenshot, expected_screenshot, pdiff_comparison)
+            matches_expected = use_imagemagick_compare(captured_screenshot, expected_screenshot, pdiff_comparison)
         elif settings['USE_PERCEPTUALDIFF']:
-            result = use_perceptualdiff(captured_screenshot, expected_screenshot, pdiff_comparison)
+            matches_expected = use_perceptualdiff(captured_screenshot, expected_screenshot, pdiff_comparison)
 
-        if result.exit_code != 0:
-            error_message = str(result).strip()
-
+        if not matches_expected:
             if os.path.exists(pdiff_comparison):
-                raise exceptions.ScreenshotMismatchWithDiff(screenshot_name,
-                                                            expected_screenshot,
-                                                            captured_screenshot,
-                                                            pdiff_comparison,
-                                                            error_message)
+                raise exceptions.ScreenshotMismatchWithDiff(screenshot_name, expected_screenshot, captured_screenshot,
+                                                            pdiff_comparison)
             else:
-                raise exceptions.ScreenshotMismatch(screenshot_name,
-                                                    expected_screenshot,
-                                                    captured_screenshot,
-                                                    error_message)
+                raise exceptions.ScreenshotMismatch(screenshot_name, expected_screenshot, captured_screenshot)
     elif settings['ALLOW_SCREENSHOT_CAPTURE']:
         shutil.move(captured_screenshot, expected_screenshot)
 
@@ -55,24 +47,33 @@ def screenshot_matches(driver, screenshot_name):
 def use_imagemagick_compare(captured_screenshot, expected_screenshot, pdiff_comparison):
     from sh import compare
 
-    return compare(
+    # Arguments list: http://www.imagemagick.org/script/compare.php
+    result = compare(
         expected_screenshot,
         captured_screenshot,
-        '-highlight-color',
-        'blue',
-        '-compose',
-        'src-over',
+        '-metric', 'AE',
+        '-highlight-color', 'blue',
+        '-compose', 'src-over',
         pdiff_comparison,
         _ok_code=[0, 1, 2]
     )
+
+    if result.exit_code == 2:
+        return False
+
+    pixel_errors = int(result.stderr)
+
+    return pixel_errors == 0
 
 
 def use_perceptualdiff(captured_screenshot, expected_screenshot, pdiff_comparison):
     from sh import perceptualdiff
 
-    return perceptualdiff(
+    result = perceptualdiff(
         '-output', pdiff_comparison,
         expected_screenshot,
         captured_screenshot,
         _ok_code=[0, 1]
     )
+
+    return result.exit_code == 0

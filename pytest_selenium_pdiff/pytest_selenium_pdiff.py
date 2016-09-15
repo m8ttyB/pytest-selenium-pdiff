@@ -92,7 +92,7 @@ def pytest_runtest_makereport(item, call):
                     ))
 
                 report.extra.append(pytest_html.extras.image(
-                    get_image_as_base64(exception.captured_screenshot),
+                    get_image_as_base64(exception.actual_screenshot),
                     'PDIFF: Actual'
                 ))
         else:
