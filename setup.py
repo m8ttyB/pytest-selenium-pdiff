@@ -12,17 +12,18 @@ with open('HISTORY.md') as history_file:
 
 requirements = [
     'pytest>=2.9.2',
-    'pytest-selenium>=1.2.1',
+    'pytest-selenium>=1.3.1',
     # used to call perceptualdiff util
     'sh==1.11'
 ]
 
 test_requirements = [
+    'pytest-cov>=2.3.1'
 ]
 
 setup(
     name='pytest-selenium-pdiff',
-    version='0.2.8',
+    version='0.3.0',
     description="A pytest package implementing perceptualdiff for Selenium tests.",
     long_description=readme + '\n\n' + history,
     author="Phil Plante",
@@ -54,6 +55,9 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         "Framework :: Pytest",
+    ],
+    setup_requires=[
+        'pytest-runner',
     ],
     test_suite='tests',
     tests_require=test_requirements

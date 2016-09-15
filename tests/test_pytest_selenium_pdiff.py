@@ -1,65 +1,25 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import os
+from copy import deepcopy
 
-import pytest
-
-from pytest_selenium_pdiff import exceptions, screenshot_matches, settings, utils
+from pytest_selenium_pdiff import *
 
 
-def test_ensure_path_exists(tmpdir):
-    path = os.path.join(str(tmpdir), 'subdir')
+def test_pytest_report_header():
+    old_settings = deepcopy(settings)
 
-    assert os.path.exists(path) is False
+    settings['USE_IMAGEMAGICK'] = True
+    settings['USE_PERCEPTUALDIFF'] = True
 
-    utils.ensure_path_exists(path)
+    assert 'ImageMagick' in pytest_report_header(None)
 
-    assert os.path.exists(path) is True
+    settings['USE_IMAGEMAGICK'] = False
 
+    assert 'perceptualdiff' in pytest_report_header(None)
 
-def test_screenshot_matches(selenium, tmpdir):
-    selenium.implicitly_wait(5)
-    selenium.set_window_size(1200, 800)
+    settings['USE_PERCEPTUALDIFF'] = False
 
-    selenium.get('./tests/fixtures/page1.html')
+    with pytest.raises(Exception) as e:
+        pytest_report_header(None)
 
-    settings['SCREENSHOTS_PATH'] = str(tmpdir.join('screenshots/'))
-    settings['PDIFF_PATH'] = str(tmpdir.join('pdiff/'))
-
-    with pytest.raises(exceptions.MissingScreenshot):
-        assert screenshot_matches(selenium, 'testing')
-
-    settings['ALLOW_SCREENSHOT_CAPTURE'] = True
-
-    assert screenshot_matches(selenium, 'testing')
-    assert os.path.exists(os.path.join(settings['SCREENSHOTS_PATH'], 'testing.png')) is True
-
-    assert screenshot_matches(selenium, 'subdir/testing')
-    assert os.path.exists(os.path.join(settings['SCREENSHOTS_PATH'], 'subdir/testing.png')) is True
-
-    with pytest.raises(exceptions.ScreenshotMismatchWithDiff):
-        selenium.get('./tests/fixtures/page1-changed.html')
-        selenium.find_element_by_tag_name('body').text.index("It has a second paragraph.")
-        assert screenshot_matches(selenium, 'testing')
-
-    captured_path = os.path.join(settings['PDIFF_PATH'], 'testing.captured.png')
-    pdiff_path = os.path.join(settings['PDIFF_PATH'], 'testing.diff.png')
-
-    assert os.path.exists(captured_path)
-    assert os.path.exists(pdiff_path)
-
-    assert screenshot_matches(selenium, 'testing', pixel_threshold=49500)
-
-    with pytest.raises(exceptions.ScreenshotMismatch):
-        screenshot_matches(selenium, 'testing-size')
-
-        selenium.set_window_size(1200, 900)
-        selenium.get('./tests/fixtures/page1-changed.html')
-        selenium.find_element_by_tag_name('body').text.index("It has a second paragraph.")
-        assert screenshot_matches(selenium, 'testing-size')
-
-    captured_path = os.path.join(settings['PDIFF_PATH'], 'testing-size.captured.png')
-    pdiff_path = os.path.join(settings['PDIFF_PATH'], 'testing-size.diff.png')
-
-    assert os.path.exists(captured_path)
-    assert os.path.exists(pdiff_path) is False
+    settings.update(old_settings)
