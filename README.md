@@ -15,8 +15,16 @@ A pytest package implementing perceptualdiff for Selenium tests.
 ## Use with pytest-html and pytest-selenium
 By default pytest-selenium will embed a screenshot depicting the current browser state.  This will lead to a duplicated screenshot because of this plugin's behavior.  At this time the best way to exclude the pytest-selenium screenshot is to set the environment variable `SELENIUM_EXCLUDE_DEBUG=screenshot`.
 
-## Running tests
-1. Ensure `tox` is installed with `pip install tox`
-1. Install PhantomJS with `brew install phantomjs`
-1. Use `tox` to run tests against py2.7 and py3.5.
-1. Rentlytics employees can run `make release` to push to PyPi.  In order to authenticate, you need a `.pypirc` file in your home directory
+## Working With This Repo
+### Setup
+1. Set up and activate [virtual environment](http://docs.python-guide.org/en/latest/dev/virtualenvs/) in the repo by
+running: `virtualenv venv` and then `source venv/bin/activate`
+1. Run `pip install -r requirements_dev.txt`
+1. Run `tox` to run the tests for the repo
+
+### Making a release
+For Rentlytics employees, to release new code for the django-zerodowntime project to pypi, follow these steps:
+1. run `bumpversion` to bump the version
+1. make sure there is a file in the home directory `~/.pypirc` with the login credentials for PyPi.  For more about
+how to upload to PyPi, see [this link](http://peterdowns.com/posts/first-time-with-pypi.html)
+1. run `make release` to push the new code to PyPi
