@@ -20,6 +20,7 @@ By default pytest-selenium will embed a screenshot depicting the current browser
 1. Set up and activate [virtual environment](http://docs.python-guide.org/en/latest/dev/virtualenvs/) in the repo by
 running: `virtualenv venv` and then `source venv/bin/activate`
 1. Run `pip install -r requirements_dev.txt`
+1. Install PhantomJS with `brew install phantomjs`
 1. Run `tox` to run the tests for the repo
 
 ### Making a release
