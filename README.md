@@ -24,6 +24,7 @@ running: `virtualenv venv` and then `source venv/bin/activate`
 
 ### Making a release
 For Rentlytics employees, to release new code for the django-zerodowntime project to pypi, follow these steps:
+
 1. run `bumpversion` to bump the version
 1. make sure there is a file in the home directory `~/.pypirc` with the login credentials for PyPi.  For more about
 how to upload to PyPi, see [this link](http://peterdowns.com/posts/first-time-with-pypi.html)
