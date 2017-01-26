@@ -10,17 +10,6 @@ with open('README.md') as readme_file:
 with open('HISTORY.md') as history_file:
     history = history_file.read()
 
-requirements = [
-    'pytest>=2.9.2',
-    'pytest-selenium>=1.3.1',
-    # used to call perceptualdiff util
-    'sh==1.11'
-]
-
-test_requirements = [
-    'pytest-cov>=2.3.1'
-]
-
 setup(
     name='pytest-selenium-pdiff',
     version='0.3.0',
@@ -38,7 +27,23 @@ setup(
         ]
     },
     include_package_data=True,
-    install_requires=requirements,
+    install_requires=[
+        'pytest>=2.9.2',
+        'pytest-selenium>=1.3.1',
+        # used to call perceptualdiff util
+        'sh==1.11'
+    ],
+    setup_requires=[
+        'pytest-runner',
+    ],
+    test_suite='tests',
+    tests_require=[
+        'pytest==3.0.6',
+        'pytest-django==3.1.2',
+        'pytest-cov',
+        'pytest-html',
+        'mock',
+    ],
     license="MIT",
     zip_safe=False,
     keywords='pytest selenium pdiff perceptualdiff',
@@ -55,10 +60,5 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         "Framework :: Pytest",
-    ],
-    setup_requires=[
-        'pytest-runner',
-    ],
-    test_suite='tests',
-    tests_require=test_requirements
+    ]
 )

@@ -3,12 +3,10 @@ machine:
     - pyenv global 2.7.11 3.5.1
 
 dependencies:
-  override:
+  pre:
     - sudo apt-get -qq update
     - sudo apt-get install -y perceptualdiff
 
 test:
-  override:
-    - tox
   post:
     - bash <(curl -s https://codecov.io/bash)
