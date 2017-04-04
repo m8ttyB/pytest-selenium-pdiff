@@ -10,3 +10,7 @@ dependencies:
 test:
   post:
     - bash <(curl -s https://codecov.io/bash)
+
+general:
+  artifacts:
+    - "report.html" # save the test report
