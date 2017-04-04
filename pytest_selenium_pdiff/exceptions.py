@@ -45,6 +45,6 @@ class InvalidCropOrMasks(AssertionError):
         message = 'Cannot transform the screenshot named ' \
                   '"{}" crop={}  masks={}'
 
-        message = message.format(screenshot_name, vars(crop), vars(masks))
+        message = message.format(screenshot_name, crop, masks)
 
-        super(MissingScreenshot, self).__init__(message, *args, **kwargs)
+        super(AssertionError, self).__init__(message, *args, **kwargs)
