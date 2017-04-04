@@ -38,3 +38,13 @@ class ScreenshotMismatchWithDiff(AssertionError):
         self.screenshot_comparison = screenshot_comparison
 
         super(ScreenshotMismatchWithDiff, self).__init__(message, *args, **kwargs)
+
+
+class InvalidCropOrMasks(AssertionError):
+    def __init__(self, screenshot_name, crop, masks, *args, **kwargs):
+        message = 'Cannot transform the screenshot named ' \
+                  '"{}" crop={}  masks={}'
+
+        message = message.format(screenshot_name, vars(crop), vars(masks))
+
+        super(MissingScreenshot, self).__init__(message, *args, **kwargs)
