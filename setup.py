@@ -40,7 +40,6 @@ setup(
     test_suite='tests',
     tests_require=[
         'pytest==3.0.1',
-        'pytest-django==3.1.2',
         'pytest-cov',
         'pytest-html',
         'mock',
