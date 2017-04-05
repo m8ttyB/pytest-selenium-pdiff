@@ -39,7 +39,7 @@ setup(
     ],
     test_suite='tests',
     tests_require=[
-        'pytest==3.0.7',
+        'pytest==3.0.1',
         'pytest-cov',
         'pytest-html',
         'mock',

@@ -41,10 +41,9 @@ class ScreenshotMismatchWithDiff(AssertionError):
 
 
 class InvalidCropOrMasks(AssertionError):
-    def __init__(self, screenshot_name, crop, masks, *args, **kwargs):
-        message = 'Cannot transform the screenshot named ' \
-                  '"{}" crop={}  masks={}'
+    def __init__(self,  coordinates, *args, **kwargs):
+        message = 'invalid coordinates {}'
 
-        message = message.format(screenshot_name, crop, masks)
+        message = message.format(coordinates)
 
         super(AssertionError, self).__init__(message, *args, **kwargs)

@@ -29,7 +29,7 @@ def test_screenshot_cropped(selenium, tmpdir):
 
 
 def test_screenshot_masked(selenium, tmpdir):
-    mask_area = [(160, 0, 400, 75)]
+    mask_area = [(180, 0, 600, 75)]
     image_name = 'mask_test'
 
     setup_selenium_session(selenium, tmpdir)
@@ -44,7 +44,7 @@ def test_screenshot_masked(selenium, tmpdir):
 
 
 def test_screenshot_multiple_mask(selenium, tmpdir):
-    mask_area = [(160, 0, 400, 75), (0, 50, 600, 125)]
+    mask_area = [(180, 0, 600, 75), (0, 50, 800, 125)]
     image_name = 'mask_test'
 
     setup_selenium_session(selenium, tmpdir)
@@ -59,7 +59,7 @@ def test_screenshot_multiple_mask(selenium, tmpdir):
 
 
 def test_screenshot_mask_invalid(selenium, tmpdir):
-    mask_area = None
+    mask_area = [(3, 2, 1)]
     image_name = 'mask_test'
 
     setup_selenium_session(selenium, tmpdir)

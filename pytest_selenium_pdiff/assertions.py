@@ -7,18 +7,28 @@ from .utils import ensure_path_exists
 from PIL import Image, ImageDraw
 
 
+def validate_coordinates(area):
+    if len(area) != 4 or not all(isinstance(x, int) for x in area):
+        raise exceptions.InvalidCropOrMasks(area)
+
+
 def transform_screen_shot(original, result, crop, masks):
     image = Image.open(original)
     if crop:
+        validate_coordinates(crop)
         image = image.crop(crop)
     draw = ImageDraw.Draw(image)
     for mask in masks:
+        validate_coordinates(mask)
         draw.rectangle(mask, fill='magenta')
     image.save(result)
 
 
-def screenshot_matches(driver, screenshot_name, crop=None, masks=[]):
+def screenshot_matches(driver, screenshot_name, crop=None, masks=None):
     __tracebackhide__ = True  # noqa
+
+    if not masks:
+        masks = []
 
     storage_path = settings['SCREENSHOTS_PATH']
     artifacts_path = settings['PDIFF_PATH']
@@ -38,10 +48,7 @@ def screenshot_matches(driver, screenshot_name, crop=None, masks=[]):
 
     driver.get_screenshot_as_file(captured_screenshot)
 
-    try:
-        transform_screen_shot(captured_screenshot, transformed_screenshot, crop=crop, masks=masks)
-    except Exception:
-        raise exceptions.InvalidCropOrMasks(screenshot_name, crop, masks)
+    transform_screen_shot(captured_screenshot, transformed_screenshot, crop=crop, masks=masks)
 
     if have_stored_screenshot:
         if settings['USE_IMAGEMAGICK']:
