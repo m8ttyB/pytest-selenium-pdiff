@@ -31,14 +31,15 @@ setup(
         'pytest>=2.9.2',
         'pytest-selenium>=1.3.1',
         # used to call perceptualdiff util
-        'sh==1.11'
+        'sh==1.11',
+        'pillow==4.0.0',
     ],
     setup_requires=[
         'pytest-runner',
     ],
     test_suite='tests',
     tests_require=[
-        'pytest==3.0.6',
+        'pytest==3.0.1',
         'pytest-django==3.1.2',
         'pytest-cov',
         'pytest-html',
