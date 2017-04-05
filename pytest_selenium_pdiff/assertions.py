@@ -7,7 +7,7 @@ from .utils import ensure_path_exists
 from PIL import Image, ImageDraw
 
 
-def trasnform_screenshot(original, result, crop, masks):
+def transform_screen_shot(original, result, crop, masks):
     image = Image.open(original)
     if crop:
         image = image.crop(crop)
@@ -39,7 +39,7 @@ def screenshot_matches(driver, screenshot_name, crop=None, masks=[]):
     driver.get_screenshot_as_file(captured_screenshot)
 
     try:
-        trasnform_screenshot(captured_screenshot, transformed_screenshot, crop=crop, masks=masks)
+        transform_screen_shot(captured_screenshot, transformed_screenshot, crop=crop, masks=masks)
     except Exception:
         raise exceptions.InvalidCropOrMasks(screenshot_name, crop, masks)
 
