@@ -38,3 +38,12 @@ class ScreenshotMismatchWithDiff(AssertionError):
         self.screenshot_comparison = screenshot_comparison
 
         super(ScreenshotMismatchWithDiff, self).__init__(message, *args, **kwargs)
+
+
+class InvalidCropOrMasks(AssertionError):
+    def __init__(self,  coordinates, *args, **kwargs):
+        message = 'invalid coordinates {}'
+
+        message = message.format(coordinates)
+
+        super(AssertionError, self).__init__(message, *args, **kwargs)
